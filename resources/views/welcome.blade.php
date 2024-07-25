@@ -18,6 +18,9 @@
     <body class="h-full grid place-items-center p-6">
         <div class="text-xs font-sans">
             {!! nl2br($poem) !!}
+    --------
+            {!! nl2br($sillyPoem) !!}
+
         </div>
     </body>
 </html>
