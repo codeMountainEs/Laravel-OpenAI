@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
-$response = Http::post('https://api.openai.com/v1/chat/completions', 
+$poem = Http::withToken(config('services.openai.secret'))
+    ->post('https://api.openai.com/v1/chat/completions', 
     [
     "model" => "gpt-4o-mini",
     "messages"=>  [
@@ -19,8 +20,14 @@ $response = Http::post('https://api.openai.com/v1/chat/completions',
       ],
     
     ]
-])->json();
+])->json('choices.0.message.content');
 
-dd($response);
+//return $poem;
+
+
+
+//dd($response['choices'][0]['message']['content']);
+
+    return view('welcome',['poem' => $poem]);
 
 });
