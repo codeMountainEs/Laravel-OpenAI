@@ -5,3 +5,9 @@ https://platform.openai.com/api-keys
 services.php 
 
 web.php 
+
+
+ai/chat.php 
+
+https://github.com/openai-php
+

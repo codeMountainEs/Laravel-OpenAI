@@ -86,7 +86,7 @@ Route::get('/', function () {
 
     $sillyPoem= $chat->reply('Cool, can you make it much, much  sillier.?');
 
-dd($poem, $sillyPoem);
+//dd($poem, $sillyPoem);
 
     return view('welcome',['poem' => $sillyPoem]);
 });
