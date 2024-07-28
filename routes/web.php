@@ -1,8 +1,10 @@
 <?php
 
+use App\Ai\Chat;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Storage;
+use OpenAI\Laravel\Facades\OpenAI;
 
 /*
 Route::get('/', function () {
@@ -76,8 +78,33 @@ Route::get('/', function () {
 });
 */
 
+Route::get('/image', function () {
+    return view('image', ['url' => session('url')]);
+});
 
-Route::get('/', function () {
+Route::post('/image', function () {
+
+    $attributes = request()->validate([
+      
+        'description' => ['required', 'string', 'min:3']
+    ]);
+
+    $url = OpenAI::images()->create([
+        'prompt' => $attributes['description'],
+        'model' => 'dall-e-3',
+    ])->data[0]->url;
+
+    return redirect('/image')->with(['url' => $url]);
+
+
+
+});
+
+
+
+
+
+Route::get('/chat', function () {
 
 
     $chat = new \App\Ai\Chat();
@@ -89,4 +116,44 @@ Route::get('/', function () {
 //dd($poem, $sillyPoem);
 
     return view('welcome',['poem' => $sillyPoem]);
+});
+
+
+
+Route::get('/roast', function () {
+    return view('roast');
+});
+
+Route::post('/roast', function() {
+
+   //dd(request('topic'));
+
+    $attributes = request()->validate([
+        'topic' => 'required','string','min:2','max:50'
+    ]);
+
+    $prompt = "Please roast {$attributes['topic']} in a sarcastic tone";
+
+   $mp3 = (new Chat())->send(
+    message: $prompt,
+    speech: true
+   );
+
+
+   $name = md5($mp3);
+   Storage::disk('public')->put("mp3/{$name}.mp3", $mp3);
+   $file = Storage::url("mp3/{$name}.mp3");
+  // dd($file);
+
+  //  file_put_contents(public_path('file.mp3'), $mp3);
+  //  $file = "/mp3/".md5($mp3).".mp3";
+  //   file_put_contents(public_path($file), $mp3); 
+
+
+   return redirect('/')->with([
+        'file' => $file,
+        'flash' => 'Roast'
+        ]
+    );
+
 });

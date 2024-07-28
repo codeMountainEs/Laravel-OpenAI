@@ -11,3 +11,13 @@ ai/chat.php
 
 https://github.com/openai-php
 
+composer require openai-php/laravel
+
+php artisan openai:install
+
+.env 
+
+
+command chat 
+
+php artisan make:command ChatCommand
