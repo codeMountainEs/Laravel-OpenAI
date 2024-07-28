@@ -1,5 +1,6 @@
 <?php
 
+use App\AI\Assistant;
 use App\Ai\Chat;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -79,7 +80,9 @@ Route::get('/', function () {
 */
 
 Route::get('/image', function () {
-    return view('image', ['url' => session('url')]);
+    return view('image', [
+        'messages' => session('messages', [])
+    ]);
 });
 
 Route::post('/image', function () {
@@ -89,13 +92,17 @@ Route::post('/image', function () {
         'description' => ['required', 'string', 'min:3']
     ]);
 
-    $url = OpenAI::images()->create([
+    /* $url = OpenAI::images()->create([
         'prompt' => $attributes['description'],
         'model' => 'dall-e-3',
-    ])->data[0]->url;
+    ])->data[0]->url; */
 
-    return redirect('/image')->with(['url' => $url]);
+    $assistant = new Assistant(session('messages', []));
+    $assistant->visualize($attributes['description']);
 
+    session(['messages' => $assistant->messages()]);
+
+    return redirect('/image');
 
 
 });
