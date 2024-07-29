@@ -2,88 +2,78 @@
 
 use App\AI\Assistant;
 use App\Ai\Chat;
+use App\Rules\SpamFree;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use OpenAI\Laravel\Facades\OpenAI;
 
-/*
 Route::get('/', function () {
+    return view('welcome');
+});
 
-    $messages =  [
-        [
-          "role" => "system",
-          "content"=> "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair."
-        ],
-      
-    ];
-    $messages =  [
-       
-        [
-          "role"=> "user",
-          "content"=> "Compose a poem that explains the concept of recursion in programming."
-        ],
-    ];
 
-    //"model" => "gpt-4o-mini",
+Route::get('/poem', function () {
+    return view('poem');
+})->name('poem');
 
-    $poem = Http::withToken(config('services.openai.secret'))
-        ->post('https://api.openai.com/v1/chat/completions', 
-        [
-            "model" => "gpt-3.5-turbo",
-            "messages"=>  $messages
-        
-        ])->json('choices.0.message.content');
+Route::get('/replies', function () {
+    return view('create-reply');
+})->name('replies');
 
-        $messages =  [
-       
-            [
-              "role"=> "assitant",
-              "content"=> $poem
-            ],
-        ];
-        $messages =  [
-       
-            [
-              "role"=> "user",
-              "content"=> "Good, but can you make it much, much more silly."
-            ],
-        ];
-
-        $sillyPoem = Http::withToken(config('services.openai.secret'))
-        ->post('https://api.openai.com/v1/chat/completions', 
-        [
-            "model" => "gpt-3.5-turbo",
-            "messages"=>  $messages
-        
-        ])->json('choices.0.message.content');
-
-        $messages =  [
-       
-            [
-              "role"=> "assitant",
-              "content"=> $sillyPoem
-            ],
-        ];
-
-    //return $poem;
-
-    //dd($response['choices'][0]['message']['content']);
-    return view('welcome',
-    [
-        'poem' => $poem,
-        'sillyPoem' => $sillyPoem
-
+/* Route::post('/replies', function () {
+    $attributes = request()->validate([
+        'body' => ['required', 'string']
     ]);
 
+    $response = OpenAI::chat()->create([
+        'model' => 'gpt-3.5-turbo-1106',
+        'messages' => [
+            ['role' => 'system', 'content' => 'You are a forum moderator who always responds using JSON.'],
+            [
+                'role' => 'user',
+                'content' => <<<EOT
+                    Please inspect the following text and determine if it is spam.
+                    {$attributes['body']}
+
+                    Expected Response Example:
+
+                    {"is_spam": true|false}
+                    EOT
+            ]
+        ],
+        'response_format' => ['type' => 'json_object']
+    ])->choices[0]->message->content;
+
+    $response = json_decode($response);
+
+    // Trigger failed validation, display a flash message, abort...
+    //return $response->is_spam ? 'THIS IS SPAM!': 'VALID POST';
+    if ($response->is_spam){
+        throw ValidationException::withMessages(['body' => 'Spam was detected.']);
+    }
+    return 'Redirect wherever is nneded. Post was valid.';
+
 });
-*/
+ */
+
+ Route::post('/replies', function () {
+    request()->validate([
+        'body' => [
+            'required',
+            'string',
+            new SpamFree()
+        ]
+    ]);
+    return 'Redirect wherever is needed. Post was valid.';
+});
 
 Route::get('/image', function () {
     return view('image', [
         'messages' => session('messages', [])
     ]);
-});
+})->name('image');
 
 Route::post('/image', function () {
 
@@ -123,13 +113,13 @@ Route::get('/chat', function () {
 //dd($poem, $sillyPoem);
 
     return view('welcome',['poem' => $sillyPoem]);
-});
+})->name('chat');
 
 
 
 Route::get('/roast', function () {
     return view('roast');
-});
+})->name('roast');
 
 Route::post('/roast', function() {
 
@@ -157,7 +147,7 @@ Route::post('/roast', function() {
   //   file_put_contents(public_path($file), $mp3); 
 
 
-   return redirect('/')->with([
+   return redirect('/roast')->with([
         'file' => $file,
         'flash' => 'Roast'
         ]
