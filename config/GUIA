@@ -21,3 +21,34 @@ php artisan openai:install
 command chat 
 
 php artisan make:command ChatCommand
+web 
+
+
+aks ai to speak , 
+web
+resource/views/roast.blade.php 
+
+Assistand.php
+
+
+07 place openai call wihthin a validation rule clas 
+
+php artisan make:rule SpamFree
+
+
+
+08 Feed OpenAi Your Docs
+
+como informar a openAi sobre tu nuevo paquete ...
+
+storage/docs/parsing.md aqui esta la info del paquete ...
+
+seguido en :
+https://platform.openai.com/assistants
+
+creamos un assitente
+
+https://platform.openai.com/docs/api-reference/runs/createThreadAndRun 
+
+
+

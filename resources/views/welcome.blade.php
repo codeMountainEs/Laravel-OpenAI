@@ -39,9 +39,9 @@
                 </a>
             </div>
             <div class="text-center">
-                <a href="{{ route('chat') }}">
+                <a href="{{ route('assistants') }}">
                     <img src="{{ asset('img/leon2.png') }}" alt="Imagen 4" class="w-full h-48 object-cover">
-                    <p class="mt-2 text-xl font-semibold">Chat</p>
+                    <p class="mt-2 text-xl font-semibold">Assistants</p>
                 </a>
             </div>
             <div class="text-center">
